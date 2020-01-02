@@ -1,0 +1,5 @@
+{
+  "go.formatTool": "goimports",
+  "go.lintTool": "revive",
+  "go.lintFlags": ["-config", "revive.toml", "-formatter", "unix"],
+}
