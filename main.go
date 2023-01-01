@@ -10,7 +10,9 @@ import (
 	"html"
 	"os"
 	"strconv"
+	"strings"
 
+	"golang.org/x/exp/constraints"
 	"google.golang.org/api/option"
 	youtube "google.golang.org/api/youtube/v3"
 )
@@ -32,6 +34,8 @@ type videoDetails struct {
 	ViewCount uint64 `json:"viewCount"`
 }
 
+const MAX_RESULTS int = 50
+
 func main() {
 	inputs := getProgramInputs()
 
@@ -39,9 +43,7 @@ func main() {
 	service, err := youtube.NewService(ctx, option.WithAPIKey(inputs.apiKey))
 	check(err)
 	result := getVideos(service, inputs)
-	for _, video := range result.Videos {
-		updateVideoStats(service, video)
-	}
+	updateVideoStats(service, &result)
 	printVideos(result)
 	// content, _ := json.Marshal(result)
 	// fmt.Printf(string(content))
@@ -67,7 +69,7 @@ func getVideos(service *youtube.Service, inputs programInputs) (result videosRes
 	for {
 		call := service.Search.List("snippet").
 			Type("video").
-			MaxResults(50).
+			MaxResults(int64(MAX_RESULTS)).
 			Order("viewCount").
 			ChannelId(inputs.channelId)
 		if inputs.publishedBefore != "" {
@@ -96,13 +98,24 @@ func getVideos(service *youtube.Service, inputs programInputs) (result videosRes
 	return result
 }
 
-func updateVideoStats(service *youtube.Service, video *videoDetails) {
-	call := service.Videos.List("statistics").Id(video.VideoId)
+func updateVideoStats(service *youtube.Service, videoResults *videosResult) {
+	videoIds := make([]string, len(videoResults.Videos))
+	for i, video := range videoResults.Videos {
+		videoIds[i] = video.VideoId
+	}
 
-	response, err := call.Do()
-	check(err)
+	// Iterate through the video IDs in chunks of MAX_RESULTS
+	for i := 0; i < len(videoIds); i += MAX_RESULTS {
+		videoIdsJoined := strings.Join(videoIds[i:min(i+MAX_RESULTS, len(videoIds))], ",")
+		videosListCall := service.Videos.List("statistics").Id(videoIdsJoined)
+		videosListResponse, err := videosListCall.Do()
+		check(err)
 
-	video.ViewCount = response.Items[0].Statistics.ViewCount
+		// Iterate through the video data and update the view count for each video
+		for j, video := range videosListResponse.Items {
+			videoResults.Videos[i+j].ViewCount = video.Statistics.ViewCount
+		}
+	}
 }
 
 func printVideos(result videosResult) {
@@ -131,4 +144,11 @@ func check(err error) {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)
 	}
+}
+
+func min[T constraints.Ordered](a, b T) T {
+	if a < b {
+		return a
+	}
+	return b
 }
