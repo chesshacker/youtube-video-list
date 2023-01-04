@@ -32,9 +32,21 @@ set -o allexport; source secrets.env; set +o allexport
   -before 2019-12-28T00:00:00Z
 ```
 
-Note that this initial version runs each request to YouTube Data API in series,
-and this example will run several hundred queries, which could take about a
-minute or two to complete.
+Note that this program runs each request to YouTube Data API in series, and runs
+two queries for every 50 videos. If your query returns a lot of videos, it could
+take a minute or two to return.
+
+I wrote a Python version of this program. You can run:
+
+```
+pip install -r requirements.txt
+set -o allexport; source secrets.env; set +o allexport
+python youtube-video-list.py \
+  --channel UCdoadna9HFHsxXWhafhNvKw \
+  --after 2019-12-01T00:00:00Z \
+  --before 2019-12-28T00:00:00Z
+```
+
 
 [YouTube Data API Overview]: https://developers.google.com/youtube/v3/getting-started
 [AWS Events]: https://www.youtube.com/channel/UCdoadna9HFHsxXWhafhNvKw/videos
