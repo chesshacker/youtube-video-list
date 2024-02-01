@@ -18,14 +18,13 @@ To run this program, you will need the following:
   this time, it appears re:Invent 2019 videos were posted between December 3 and
   December 26.
 
-Before running, you need to copy `secrets.template.env` to `secrets.env` and
-replace the placeholder with your YouTube Data API Key.
+Before running, you need to the environment variable `YOUTUBE_APIKEY` to your
+YouTube Data API Key.
 
 Then you can build and run the program:
 
-```
+```sh
 make
-set -o allexport; source secrets.env; set +o allexport
 ./youtube-video-list \
   -channel UCdoadna9HFHsxXWhafhNvKw \
   -after 2019-12-01T00:00:00Z \
@@ -38,15 +37,13 @@ take a minute or two to return.
 
 I wrote a Python version of this program. You can run:
 
-```
+```sh
 pip install -r requirements.txt
-set -o allexport; source secrets.env; set +o allexport
 python youtube-video-list.py \
   --channel UCdoadna9HFHsxXWhafhNvKw \
   --after 2019-12-01T00:00:00Z \
   --before 2019-12-28T00:00:00Z
 ```
-
 
 [YouTube Data API Overview]: https://developers.google.com/youtube/v3/getting-started
 [AWS Events]: https://www.youtube.com/channel/UCdoadna9HFHsxXWhafhNvKw/videos
