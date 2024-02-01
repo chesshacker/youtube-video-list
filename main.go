@@ -34,7 +34,7 @@ type videoDetails struct {
 	ViewCount uint64 `json:"viewCount"`
 }
 
-const MAX_RESULTS int = 50
+const maxResults int = 50
 
 func main() {
 	inputs := getProgramInputs()
@@ -50,7 +50,7 @@ func main() {
 }
 
 func getProgramInputs() (result programInputs) {
-	result.apiKey = os.Getenv("APIKEY")
+	result.apiKey = os.Getenv("YOUTUBE_APIKEY")
 	flag.StringVar(&result.channelId, "channel", "", "YouTube Channel ID")
 	flag.StringVar(&result.publishedBefore, "before", "", "Published before time, i.e. 2019-12-04T00:00:00Z")
 	flag.StringVar(&result.publishedAfter, "after", "", "Published after time, i.e. 2019-12-03T00:00:00Z")
@@ -69,7 +69,7 @@ func getVideos(service *youtube.Service, inputs programInputs) (result videosRes
 	for {
 		call := service.Search.List("snippet").
 			Type("video").
-			MaxResults(int64(MAX_RESULTS)).
+			MaxResults(int64(maxResults)).
 			Order("viewCount").
 			ChannelId(inputs.channelId)
 		if inputs.publishedBefore != "" {
@@ -104,9 +104,9 @@ func updateVideoStats(service *youtube.Service, videoResults *videosResult) {
 		videoIds[i] = video.VideoId
 	}
 
-	// Iterate through the video IDs in chunks of MAX_RESULTS
-	for i := 0; i < len(videoIds); i += MAX_RESULTS {
-		videoIdsJoined := strings.Join(videoIds[i:min(i+MAX_RESULTS, len(videoIds))], ",")
+	// Iterate through the video IDs in chunks of maxResults
+	for i := 0; i < len(videoIds); i += maxResults {
+		videoIdsJoined := strings.Join(videoIds[i:min(i+maxResults, len(videoIds))], ",")
 		videosListCall := service.Videos.List("statistics").Id(videoIdsJoined)
 		videosListResponse, err := videosListCall.Do()
 		check(err)
