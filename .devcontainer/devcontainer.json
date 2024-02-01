@@ -9,7 +9,9 @@
 			"extensions": [
 				"golang.go",
 				"GitHub.copilot",
-				"GitHub.copilot-chat"
+				"GitHub.copilot-chat",
+				"DavidAnson.vscode-markdownlint",
+				"stkb.rewrap"
 			]
 		}
 	}
