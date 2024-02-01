@@ -66,8 +66,9 @@ func getProgramInputs() (result programInputs) {
 
 func getVideos(service *youtube.Service, inputs programInputs) (result videosResult) {
 	var nextPageToken string
+	searchListPart := []string{"snippet"}
 	for {
-		call := service.Search.List("snippet").
+		call := service.Search.List(searchListPart).
 			Type("video").
 			MaxResults(int64(maxResults)).
 			Order("viewCount").
@@ -105,9 +106,10 @@ func updateVideoStats(service *youtube.Service, videoResults *videosResult) {
 	}
 
 	// Iterate through the video IDs in chunks of maxResults
+	videosListPart := []string{"statistics"}
 	for i := 0; i < len(videoIds); i += maxResults {
 		videoIdsJoined := strings.Join(videoIds[i:min(i+maxResults, len(videoIds))], ",")
-		videosListCall := service.Videos.List("statistics").Id(videoIdsJoined)
+		videosListCall := service.Videos.List(videosListPart).Id(videoIdsJoined)
 		videosListResponse, err := videosListCall.Do()
 		check(err)
 
