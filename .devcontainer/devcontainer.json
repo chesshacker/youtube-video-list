@@ -11,10 +11,7 @@
 		"vscode": {
 			"extensions": [
 				"golang.go",
-				"GitHub.copilot",
-				"GitHub.copilot-chat",
-				"DavidAnson.vscode-markdownlint",
-				"stkb.rewrap"
+				"DavidAnson.vscode-markdownlint"
 			],
 			"settings": {
 				"terminal.integrated.defaultProfile.linux": "zsh"
@@ -26,7 +23,7 @@
 		"ghcr.io/devcontainers/features/sshd:1": {
 			"version": "latest"
 		}
-	},
+	}
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
