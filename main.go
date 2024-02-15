@@ -100,16 +100,16 @@ func getVideos(service *youtube.Service, inputs programInputs) (result videosRes
 }
 
 func updateVideoStats(service *youtube.Service, videoResults *videosResult) {
-	videoIds := make([]string, len(videoResults.Videos))
+	videoIDs := make([]string, len(videoResults.Videos))
 	for i, video := range videoResults.Videos {
-		videoIds[i] = video.VideoId
+		videoIDs[i] = video.VideoId
 	}
 
 	// Iterate through the video IDs in chunks of maxResults
 	videosListPart := []string{"statistics"}
-	for i := 0; i < len(videoIds); i += maxResults {
-		videoIdsJoined := strings.Join(videoIds[i:min(i+maxResults, len(videoIds))], ",")
-		videosListCall := service.Videos.List(videosListPart).Id(videoIdsJoined)
+	for i := 0; i < len(videoIDs); i += maxResults {
+		videoIDsJoined := strings.Join(videoIDs[i:min(i+maxResults, len(videoIDs))], ",")
+		videosListCall := service.Videos.List(videosListPart).Id(videoIDsJoined)
 		videosListResponse, err := videosListCall.Do()
 		check(err)
 
